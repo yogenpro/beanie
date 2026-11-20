@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="page-heading"><h1>Saved reports</h1></header>
+{% if reports %}
+<ul class="list-group report-list">
+  {% for name, path, count in reports %}
+  <li class="list-group-item"><a href="{{ link(path) }}">{{ name }}</a><span class="text-secondary">{{ "{:,}".format(count) }} rows</span></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-secondary">No saved queries are selected.</p>
+{% endif %}
+{% endblock %}

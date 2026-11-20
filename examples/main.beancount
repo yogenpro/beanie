@@ -1,0 +1,8 @@
+option "title" "Juniper household"
+option "operating_currency" "USD"
+
+include "accounts.beancount"
+include "activity.beancount"
+
+2025-01-01 query "Spending by category" "SELECT account, currency, sum(number) AS total WHERE account ~ '^Expenses:' GROUP BY account, currency ORDER BY account, currency"
+2025-01-01 query "Coffee purchases" "SELECT date, payee, narration, position WHERE account = 'Expenses:Coffee' ORDER BY date"

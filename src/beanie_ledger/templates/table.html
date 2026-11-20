@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "components.html" import totals_strip, pagination, account_ref %}
+{% block body %}
+<header class="page-heading">
+  <a class="back-link" href="{{ link('activity/index.html' if period else 'reports/index.html') }}">{{ 'All periods' if period else 'All reports' }}</a>
+  <h1>{{ title }}</h1>
+  {% if period %}
+  <nav class="period-links" aria-label="Period reports">
+    <a href="{{ link('activity/' ~ period ~ '/index.html') }}"{% if show_accounts %} aria-current="true"{% endif %}>Categories</a>
+    <a href="{{ link('activity/' ~ period ~ '/payees/index.html') }}"{% if not show_accounts %} aria-current="true"{% endif %}>Payees</a>
+  </nav>
+  {% endif %}
+</header>
+{{ totals_strip(totals, 'Period totals') }}
+<div class="section-heading">
+  <span class="text-secondary">{{ "{:,}".format(row_count) }} rows</span>
+  {% if csv_path %}<a class="btn" href="{{ link(csv_path) }}" download>Download CSV</a>{% endif %}
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for row in rows %}
+        <tr>
+        {% for cell in row %}
+        {% set is_amount = period and loop.index0 == 2 %}
+        <td{% if is_amount %} class="amount"{% endif %}>
+        {% if show_accounts and loop.first %}{{ account_ref(cell, account_url) }}{% elif is_amount %}{{ cell | money }}{% else %}{{ cell | cell }}{% endif %}
+        </td>
+        {% endfor %}
+        </tr>
+      {% else %}
+        <tr><td colspan="{{ columns | length }}" class="text-secondary">No rows for this report.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ pagination(paths, index, link) }}
+{% endblock %}

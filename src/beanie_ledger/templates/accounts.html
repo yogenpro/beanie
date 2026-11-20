@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="page-heading"><h1>Accounts</h1></header>
+{% for root, accounts in groups.items() %}
+<section class="card account-group">
+  <h2 class="card-header">{{ root }}</h2>
+  <div class="table-responsive">
+    <table class="table card-table table-vcenter">
+      <thead><tr><th scope="col">Account</th><th scope="col">Opened</th><th scope="col">Closed</th></tr></thead>
+      <tbody>
+      {% for name, opened, closed in accounts %}
+      <tr><td><a href="{{ account_url(name) }}">{{ name.split(':', 1)[-1].replace(':', ' / ') }}</a></td>
+      <td class="readable-date">{{ opened }}</td><td class="readable-date">{{ closed or '—' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+<p class="text-secondary">This ledger has no opened accounts.</p>
+{% endfor %}
+{% endblock %}

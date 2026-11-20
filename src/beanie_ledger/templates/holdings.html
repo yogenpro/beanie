@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "components.html" import account_ref %}
+{% block body %}
+<header class="page-heading">
+  <h1>Holdings</h1>
+  {% if as_of %}<p class="text-secondary">Ledger positions as of {{ as_of }}{% if valuation_currency %}<span class="separator">·</span>Market values in {{ valuation_currency }}{% endif %}</p>{% endif %}
+</header>
+<section class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Account</th><th scope="col" class="amount">Units</th><th scope="col" class="amount">Lot cost per unit</th>{% if valuation_currency %}<th scope="col" class="amount">Market value</th><th scope="col">Price date</th>{% endif %}</tr></thead>
+      <tbody>
+      {% for account, pos, valuation in holdings %}
+      <tr>
+        <td>{{ account_ref(account, account_url) }}</td>
+        <td class="amount">{{ pos.units.number | money }} {{ pos.units.currency }}</td>
+        <td class="amount">{% if pos.cost %}{{ pos.cost.number | money }} {{ pos.cost.currency }}{% else %}—{% endif %}</td>
+        {% if valuation_currency %}
+        <td class="amount">{% if valuation %}{{ valuation[0] | money }} {{ valuation[1] }}{% else %}Unpriced{% endif %}</td>
+        <td class="readable-date">{{ valuation[2] if valuation and valuation[2] else '—' }}</td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="{{ 5 if valuation_currency else 3 }}" class="text-secondary">No open asset or liability positions.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

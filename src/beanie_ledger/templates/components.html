@@ -1,0 +1,53 @@
+{% macro totals_strip(totals, heading) -%}
+{% if totals %}
+<section aria-label="{{ heading }}" class="flow-strip card">
+  {% for flow in totals %}
+  <dl class="flow-row">
+    <div><dt>Income <span>{{ flow.currency }}</span></dt><dd>{{ flow.income | money }}</dd></div>
+    <div><dt>Spending <span>{{ flow.currency }}</span></dt><dd>{{ flow.expenses | money }}</dd></div>
+    <div><dt>Income less spending <span>{{ flow.currency }}</span></dt><dd class="{% if flow.net < 0 %}negative{% else %}positive{% endif %}">{{ flow.net | money }}</dd></div>
+  </dl>
+  {% endfor %}
+</section>
+{% endif %}
+{%- endmacro %}
+
+{% macro pagination(paths, index, link) -%}
+{% if paths | length > 1 %}
+<nav class="register-pagination" aria-label="Pagination">
+  <p class="text-secondary mb-0">Page {{ index + 1 }} of {{ paths | length }}</p>
+  <div class="btn-list">
+    {% if index > 0 %}
+    <a class="btn" rel="prev" href="{{ link(paths[index - 1]) }}">Previous</a>
+    {% endif %}
+    {% if index + 1 < paths | length %}
+    <a class="btn" rel="next" href="{{ link(paths[index + 1]) }}">Next</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}
+{%- endmacro %}
+
+{% macro account_ref(account, account_url) -%}
+{% set url = account_url(account) %}
+{% if url %}<a href="{{ url }}">{{ account }}</a>{% else %}{{ account }}{% endif %}
+{%- endmacro %}
+
+{% macro postings(entry, account_url) -%}
+<div class="table-responsive posting-detail">
+  <table class="table table-sm">
+    <caption class="visually-hidden">Transaction postings</caption>
+    <thead><tr><th scope="col">Account</th><th scope="col" class="amount">Units</th><th scope="col" class="amount">Lot cost</th><th scope="col" class="amount">Price</th></tr></thead>
+    <tbody>
+      {% for posting in entry.postings %}
+      <tr>
+        <td>{{ account_ref(posting.account, account_url) }}</td>
+        <td class="amount">{{ posting.units.number | money }} {{ posting.units.currency }}</td>
+        <td class="amount">{% if posting.cost %}{{ posting.cost.number | money }} {{ posting.cost.currency }}{% else %}—{% endif %}</td>
+        <td class="amount">{% if posting.price %}{{ posting.price.number | money }} {{ posting.price.currency }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endmacro %}

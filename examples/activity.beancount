@@ -1,0 +1,49 @@
+2025-10-01 * "Starting balances"
+  Assets:Checking          4100.00 USD
+  Assets:Travel-Cash         200.00 EUR
+  Equity:Opening-Balances -4100.00 USD
+  Equity:Opening-Balances  -200.00 EUR
+
+2025-10-01 balance Assets:Reserves 0 USD
+
+2025-10-04 * "Juniper Property" "October rent"
+  Expenses:Housing          1450.00 USD
+  Assets:Checking          -1450.00 USD
+
+2025-10-15 * "Oak Workshop" "Payroll"
+  Assets:Checking           3600.00 USD
+  Income:Salary            -3600.00 USD
+
+2025-11-02 * "Juniper Property" "November rent"
+  Expenses:Housing          1450.00 USD
+  Assets:Checking          -1450.00 USD
+
+2025-11-03 * "Field Market" "Weekly groceries"
+  Expenses:Groceries         116.53 USD
+  Liabilities:Card          -116.53 USD
+
+2025-11-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee             28.40 USD
+  Liabilities:Card           -28.40 USD
+
+2025-11-11 * "Paper Lantern" "Refund for one bag"
+  Liabilities:Card            14.20 USD
+  Expenses:Coffee            -14.20 USD
+
+2025-11-13 * "City Tram" "Transit ticket"
+  Expenses:Transit             3.75 EUR
+  Assets:Travel-Cash          -3.75 EUR
+
+2025-11-14 * "Card payment"
+  Liabilities:Card           130.73 USD
+  Assets:Checking           -130.73 USD
+
+2025-11-15 * "Oak Workshop" "Payroll"
+  Assets:Checking           3600.00 USD
+  Income:Salary            -3600.00 USD
+
+2025-11-16 * "Index fund purchase"
+  Assets:Investments           5.25 INDEX {40.00 USD}
+  Assets:Checking           -210.00 USD
+
+2025-11-17 price INDEX 43.50 USD

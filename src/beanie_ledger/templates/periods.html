@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="page-heading"><h1>Income &amp; spending</h1></header>
+{% for label, periods in [('By year', years), ('By month', months)] %}
+{% if periods %}
+<section class="card account-group">
+  <h2 class="card-header">{{ label }}</h2>
+  <ul class="period-list">
+  {% for period in periods %}
+    <li><a href="{{ link('activity/' ~ period ~ '/index.html') }}">{{ period }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endfor %}
+{% if not years %}<p class="text-secondary">There are no periods with transactions.</p>{% endif %}
+{% endblock %}
