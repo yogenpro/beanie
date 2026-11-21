@@ -1,11 +1,11 @@
 {% macro totals_strip(totals, heading) -%}
 {% if totals %}
-<section aria-label="{{ heading }}" class="flow-strip card">
+<section aria-label="{{ heading }}" class="card mb-3">
   {% for flow in totals %}
-  <dl class="flow-row">
-    <div><dt>Income <span>{{ flow.currency }}</span></dt><dd>{{ flow.income | money }}</dd></div>
-    <div><dt>Spending <span>{{ flow.currency }}</span></dt><dd>{{ flow.expenses | money }}</dd></div>
-    <div><dt>Income less spending <span>{{ flow.currency }}</span></dt><dd class="{% if flow.net < 0 %}negative{% else %}positive{% endif %}">{{ flow.net | money }}</dd></div>
+  <dl class="card-body row g-2 m-0{% if not loop.first %} border-top{% endif %}">
+    <div class="col"><dt class="text-secondary">Income <span>{{ flow.currency }}</span></dt><dd class="h3 mb-0">{{ flow.income | money }}</dd></div>
+    <div class="col"><dt class="text-secondary">Spending <span>{{ flow.currency }}</span></dt><dd class="h3 mb-0">{{ flow.expenses | money }}</dd></div>
+    <div class="col-12 col-sm"><dt class="text-secondary">Income less spending <span>{{ flow.currency }}</span></dt><dd class="h3 mb-0{% if flow.net < 0 %} text-danger{% endif %}">{{ flow.net | money }}</dd></div>
   </dl>
   {% endfor %}
 </section>
@@ -14,7 +14,7 @@
 
 {% macro pagination(paths, index, link) -%}
 {% if paths | length > 1 %}
-<nav class="register-pagination" aria-label="Pagination">
+<nav class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3" aria-label="Pagination">
   <p class="text-secondary mb-0">Page {{ index + 1 }} of {{ paths | length }}</p>
   <div class="btn-list">
     {% if index > 0 %}
@@ -28,14 +28,26 @@
 {% endif %}
 {%- endmacro %}
 
+{% macro period_tabs(period, link, active) -%}
+<nav class="nav nav-pills mb-3" aria-label="Period reports">
+  {% for key, label, path in [
+    ('statement', 'Income Statement', 'income/' ~ period ~ '/index.html'),
+    ('categories', 'Categories', 'activity/' ~ period ~ '/index.html'),
+    ('payees', 'Payees', 'activity/' ~ period ~ '/payees/index.html')
+  ] %}
+  <a class="nav-link{% if active == key %} active{% endif %}" href="{{ link(path) }}"{% if active == key %} aria-current="page"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{%- endmacro %}
+
 {% macro account_ref(account, account_url) -%}
 {% set url = account_url(account) %}
 {% if url %}<a href="{{ url }}">{{ account }}</a>{% else %}{{ account }}{% endif %}
 {%- endmacro %}
 
 {% macro postings(entry, account_url) -%}
-<div class="table-responsive posting-detail">
-  <table class="table table-sm">
+<div class="table-responsive mx-3 mb-3">
+  <table class="table table-sm mb-0 posting-table">
     <caption class="visually-hidden">Transaction postings</caption>
     <thead><tr><th scope="col">Account</th><th scope="col" class="amount">Units</th><th scope="col" class="amount">Lot cost</th><th scope="col" class="amount">Price</th></tr></thead>
     <tbody>

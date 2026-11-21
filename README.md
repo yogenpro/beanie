@@ -1,8 +1,10 @@
 # Beanie
 
 Beanie is a static site generator for Beancount 3. It turns a validated ledger
-into a read-only Tabler site with account registers, income and spending reports,
-holdings, and saved queries. The generated pages work without JavaScript.
+into a read-only site with native Tabler components and Fava's report structure. Explore the
+income statement, balance sheet, trial balance, transaction journal, account
+registers, holdings, commodity prices, and saved queries. Reports work without
+JavaScript. A small script remembers the desktop sidebar preference locally.
 
 ## Try it
 
@@ -19,6 +21,11 @@ Open http://127.0.0.1:8000. For another ledger, pass the main Beancount file as
 the first argument to `beanie build`. Includes and plugins are loaded by
 Beancount. Install any trusted plugins your ledger requires in the build
 environment.
+
+The fictional Juniper household covers January 2023 through December 2025.
+Use **Time period** to compare years or drill into a month. The sample includes
+payroll, rent, groceries, variable utility bills, bonuses, refunds, and card
+payments.
 
 The GitHub repository and command are called Beanie. The Python distribution
 is named `beanie-ledger` to distinguish it from the unrelated Beanie ODM.
@@ -43,8 +50,10 @@ The default is to run all saved Beancount `query` directives. Use `queries = []`
 to omit them. Selected query results appear as HTML tables. Enable CSV only if
 you intend to publish the selected query output as a downloadable file.
 
-Income and spending use the ledger's income and expense postings, grouped by
-native currency. Refunds reduce spending. The holdings page keeps native units,
+The statements show booked amounts at cost. The balance sheet applies Beancount's
+closing entries in memory so the equity section reflects earnings and currency
+conversions. Income and spending drill-downs group native currencies and refunds
+reduce spending. The holdings page keeps native units,
 lot cost, and a market value in the first operating currency in separate
 columns. It uses prices recorded in the ledger and shows the price date or
 labels the position unpriced. A valid ledger build does not establish statement
@@ -72,5 +81,5 @@ previous Beanie build. Give each site its own output directory.
 Run `uv run --locked python -m unittest discover -s tests -v`. Use synthetic
 ledgers in public examples, screenshots, and issues.
 
-Beanie is licensed under GPL-2.0-only. The bundled Tabler and Bootstrap stylesheet
-is MIT-licensed. See [third-party notices](THIRD_PARTY_NOTICES.md).
+Beanie is licensed under GPL-2.0-only. The bundled stylesheet and Tabler icons
+are MIT-licensed. See [third-party notices](THIRD_PARTY_NOTICES.md).

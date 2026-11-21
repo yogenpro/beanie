@@ -1,12 +1,12 @@
 {% extends "base.html" %}
+{% block heading %}Saved queries{% endblock %}
 {% block body %}
-<header class="page-heading"><h1>Saved reports</h1></header>
 {% if reports %}
-<ul class="list-group report-list">
+<div class="card"><ul class="list-group list-group-flush">
   {% for name, path, count in reports %}
-  <li class="list-group-item"><a href="{{ link(path) }}">{{ name }}</a><span class="text-secondary">{{ "{:,}".format(count) }} rows</span></li>
+  <li class="list-group-item d-flex justify-content-between gap-2"><a href="{{ link(path) }}">{{ name }}</a><span class="text-secondary text-nowrap">{{ "{:,}".format(count) }} rows</span></li>
   {% endfor %}
-</ul>
+</ul></div>
 {% else %}
 <p class="text-secondary">No saved queries are selected.</p>
 {% endif %}

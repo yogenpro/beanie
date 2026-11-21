@@ -1,0 +1,495 @@
+; 2025 activity for the fictional Juniper household. All amounts are synthetic.
+
+2025-01-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-01-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    128.28 USD
+  Liabilities:Card                     -128.28 USD
+
+2025-01-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         99.45 USD
+  Assets:Checking                       -99.45 USD
+
+2025-01-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-01-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        18.40 USD
+  Liabilities:Card                      -18.40 USD
+
+2025-01-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-01-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    130.63 USD
+  Liabilities:Card                     -130.63 USD
+
+2025-01-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        37.85 USD
+  Liabilities:Card                      -37.85 USD
+
+2025-01-26 * "Card payment"
+  Liabilities:Card                      315.16 USD
+  Assets:Checking                      -315.16 USD
+
+2025-01-27 balance Liabilities:Card 0.00 USD
+
+2025-02-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-02-03 * "Field Market" "Groceries"
+  Expenses:Groceries                     99.28 USD
+  Liabilities:Card                      -99.28 USD
+
+2025-02-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         92.45 USD
+  Assets:Checking                       -92.45 USD
+
+2025-02-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-02-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-02-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-02-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    141.63 USD
+  Liabilities:Card                     -141.63 USD
+
+2025-02-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        40.85 USD
+  Liabilities:Card                      -40.85 USD
+
+2025-02-26 * "Card payment"
+  Liabilities:Card                      306.41 USD
+  Assets:Checking                      -306.41 USD
+
+2025-02-27 balance Liabilities:Card 0.00 USD
+
+2025-03-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-03-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    106.28 USD
+  Liabilities:Card                     -106.28 USD
+
+2025-03-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         83.45 USD
+  Assets:Checking                       -83.45 USD
+
+2025-03-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-03-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        18.40 USD
+  Liabilities:Card                      -18.40 USD
+
+2025-03-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-03-18 * "Town Studio" "Photography workshop"
+  Expenses:Leisure                      144.00 USD
+  Liabilities:Card                     -144.00 USD
+
+2025-03-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    123.63 USD
+  Liabilities:Card                     -123.63 USD
+
+2025-03-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        43.85 USD
+  Liabilities:Card                      -43.85 USD
+
+2025-03-26 * "Card payment"
+  Liabilities:Card                      436.16 USD
+  Assets:Checking                      -436.16 USD
+
+2025-03-27 balance Liabilities:Card 0.00 USD
+
+2025-04-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-04-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    113.28 USD
+  Liabilities:Card                     -113.28 USD
+
+2025-04-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         74.45 USD
+  Assets:Checking                       -74.45 USD
+
+2025-04-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-04-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-04-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-04-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    134.63 USD
+  Liabilities:Card                     -134.63 USD
+
+2025-04-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        46.85 USD
+  Liabilities:Card                      -46.85 USD
+
+2025-04-26 * "Card payment"
+  Liabilities:Card                      319.41 USD
+  Assets:Checking                      -319.41 USD
+
+2025-04-27 balance Liabilities:Card 0.00 USD
+
+2025-05-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-05-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    120.28 USD
+  Liabilities:Card                     -120.28 USD
+
+2025-05-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         69.45 USD
+  Assets:Checking                       -69.45 USD
+
+2025-05-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-05-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        18.40 USD
+  Liabilities:Card                      -18.40 USD
+
+2025-05-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-05-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    116.63 USD
+  Liabilities:Card                     -116.63 USD
+
+2025-05-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        35.85 USD
+  Liabilities:Card                      -35.85 USD
+
+2025-05-26 * "Card payment"
+  Liabilities:Card                      291.16 USD
+  Assets:Checking                      -291.16 USD
+
+2025-05-27 balance Liabilities:Card 0.00 USD
+
+2025-06-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-06-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    127.28 USD
+  Liabilities:Card                     -127.28 USD
+
+2025-06-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         74.45 USD
+  Assets:Checking                       -74.45 USD
+
+2025-06-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-06-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-06-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-06-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    127.63 USD
+  Liabilities:Card                     -127.63 USD
+
+2025-06-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        38.85 USD
+  Liabilities:Card                      -38.85 USD
+
+2025-06-26 * "Card payment"
+  Liabilities:Card                      318.41 USD
+  Assets:Checking                      -318.41 USD
+
+2025-06-27 balance Liabilities:Card 0.00 USD
+
+2025-07-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-07-03 * "Field Market" "Groceries"
+  Expenses:Groceries                     98.28 USD
+  Liabilities:Card                      -98.28 USD
+
+2025-07-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         87.45 USD
+  Assets:Checking                       -87.45 USD
+
+2025-07-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-07-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        18.40 USD
+  Liabilities:Card                      -18.40 USD
+
+2025-07-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-07-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    138.63 USD
+  Liabilities:Card                     -138.63 USD
+
+2025-07-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        41.85 USD
+  Liabilities:Card                      -41.85 USD
+
+2025-07-26 * "Card payment"
+  Liabilities:Card                      297.16 USD
+  Assets:Checking                      -297.16 USD
+
+2025-07-27 balance Liabilities:Card 0.00 USD
+
+2025-08-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-08-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    105.28 USD
+  Liabilities:Card                     -105.28 USD
+
+2025-08-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         91.45 USD
+  Assets:Checking                       -91.45 USD
+
+2025-08-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-08-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-08-12 * "City Tram" "Travel transit pass"
+  Expenses:Transit                       18.40 EUR
+  Assets:Travel-Cash                    -18.40 EUR
+
+2025-08-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-08-18 * "Alder Inn" "Weekend stay"
+  Expenses:Travel                       395.00 USD
+  Liabilities:Card                     -395.00 USD
+
+2025-08-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    120.63 USD
+  Liabilities:Card                     -120.63 USD
+
+2025-08-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        44.85 USD
+  Liabilities:Card                      -44.85 USD
+
+2025-08-26 * "Card payment"
+  Liabilities:Card                      690.41 USD
+  Assets:Checking                      -690.41 USD
+
+2025-08-27 balance Liabilities:Card 0.00 USD
+
+2025-09-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-09-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    112.28 USD
+  Liabilities:Card                     -112.28 USD
+
+2025-09-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         78.45 USD
+  Assets:Checking                       -78.45 USD
+
+2025-09-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-09-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        18.40 USD
+  Liabilities:Card                      -18.40 USD
+
+2025-09-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-09-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    131.63 USD
+  Liabilities:Card                     -131.63 USD
+
+2025-09-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        47.85 USD
+  Liabilities:Card                      -47.85 USD
+
+2025-09-26 * "Card payment"
+  Liabilities:Card                      310.16 USD
+  Assets:Checking                      -310.16 USD
+
+2025-09-27 balance Liabilities:Card 0.00 USD
+
+2025-10-03 * "Field Market" "Groceries"
+  Expenses:Groceries                    119.28 USD
+  Liabilities:Card                     -119.28 USD
+
+2025-10-04 * "Juniper Property" "October rent"
+  Expenses:Housing          1450.00 USD
+  Assets:Checking          -1450.00 USD
+
+2025-10-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         71.45 USD
+  Assets:Checking                       -71.45 USD
+
+2025-10-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-10-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-10-15 * "Oak Workshop" "Payroll"
+  Assets:Checking           3600.00 USD
+  Income:Salary            -3600.00 USD
+
+2025-10-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    142.63 USD
+  Liabilities:Card                     -142.63 USD
+
+2025-10-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        36.85 USD
+  Liabilities:Card                      -36.85 USD
+
+2025-10-26 * "Card payment"
+  Liabilities:Card                      323.41 USD
+  Assets:Checking                      -323.41 USD
+
+2025-10-27 balance Liabilities:Card 0.00 USD
+
+2025-11-02 * "Juniper Property" "November rent"
+  Expenses:Housing          1450.00 USD
+  Assets:Checking          -1450.00 USD
+
+2025-11-03 * "Field Market" "Weekly groceries"
+  Expenses:Groceries         116.53 USD
+  Liabilities:Card          -116.53 USD
+
+2025-11-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         79.45 USD
+  Assets:Checking                       -79.45 USD
+
+2025-11-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-11-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee             28.40 USD
+  Liabilities:Card           -28.40 USD
+
+2025-11-11 * "Paper Lantern" "Refund for one bag"
+  Liabilities:Card            14.20 USD
+  Expenses:Coffee            -14.20 USD
+
+2025-11-13 * "City Tram" "Transit ticket"
+  Expenses:Transit             3.75 EUR
+  Assets:Travel-Cash          -3.75 EUR
+
+2025-11-14 * "Card payment"
+  Liabilities:Card           130.73 USD
+  Assets:Checking           -130.73 USD
+
+2025-11-15 * "Oak Workshop" "Payroll"
+  Assets:Checking           3600.00 USD
+  Income:Salary            -3600.00 USD
+
+2025-11-16 * "Index fund purchase"
+  Assets:Investments           5.25 INDEX {40.00 USD}
+  Assets:Checking           -210.00 USD
+
+2025-11-17 price INDEX 43.50 USD
+
+2025-11-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    124.63 USD
+  Liabilities:Card                     -124.63 USD
+
+2025-11-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        39.85 USD
+  Liabilities:Card                      -39.85 USD
+
+2025-11-26 * "Card payment"
+  Liabilities:Card                      164.48 USD
+  Assets:Checking                      -164.48 USD
+
+2025-11-27 balance Liabilities:Card 0.00 USD
+
+2025-12-02 * "Juniper Property" "Monthly rent"
+  Expenses:Housing                     1450.00 USD
+  Assets:Checking                     -1450.00 USD
+
+2025-12-03 * "Field Market" "Groceries"
+  Expenses:Groceries                     97.28 USD
+  Liabilities:Card                      -97.28 USD
+
+2025-12-06 * "Juniper Electric" "Monthly electric bill"
+  Expenses:Utilities:Electricity         94.45 USD
+  Assets:Checking                       -94.45 USD
+
+2025-12-08 * "Clover Broadband" "Home internet"
+  Expenses:Utilities:Internet            55.00 USD
+  Assets:Checking                       -55.00 USD
+
+2025-12-10 * "Paper Lantern" "Coffee beans"
+  Expenses:Coffee                        24.65 USD
+  Liabilities:Card                      -24.65 USD
+
+2025-12-15 * "Oak Workshop" "Payroll"
+  Assets:Checking                      3600.00 USD
+  Income:Salary                       -3600.00 USD
+
+2025-12-18 * "Maple Hardware" "Heating repair supplies"
+  Expenses:Home:Repairs                 128.25 USD
+  Liabilities:Card                     -128.25 USD
+
+2025-12-19 * "Oak Workshop" "Year-end bonus"
+  Assets:Checking                       810.00 USD
+  Income:Bonus                         -810.00 USD
+
+2025-12-19 * "Willow Grocer" "Groceries"
+  Expenses:Groceries                    135.63 USD
+  Liabilities:Card                     -135.63 USD
+
+2025-12-22 * "Fern Table" "Dinner out"
+  Expenses:Dining                        42.85 USD
+  Liabilities:Card                      -42.85 USD
+
+2025-12-26 * "Card payment"
+  Liabilities:Card                      428.66 USD
+  Assets:Checking                      -428.66 USD
+
+2025-12-27 balance Liabilities:Card 0.00 USD

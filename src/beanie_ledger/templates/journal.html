@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "components.html" import pagination, postings %}
+{% block subtitle %}<div class="text-secondary mt-1">{{ "{:,}".format(count) }} transactions</div>{% endblock %}
+{% block body %}
+<section class="card" aria-label="Journal entries">
+{% for entry in entries %}
+<details class="transaction-entry journal-entry" id="transaction-{{ transaction_id(entry) }}">
+  <summary class="py-3 pe-3">
+    <time class="text-secondary readable-date" datetime="{{ entry.date }}">{{ entry.date }}</time>
+    <span class="text-secondary" aria-label="Flag {{ entry.flag }}">{{ entry.flag }}</span>
+    <span class="entry-copy">
+      <span class="fw-semibold text-break">{{ entry.payee or entry.narration or 'Transaction' }}</span>
+      {% if entry.payee and entry.narration %}<span class="text-secondary text-break">{{ entry.narration }}</span>{% endif %}
+    </span>
+  </summary>
+  {{ postings(entry, account_url) }}
+</details>
+{% else %}
+<p class="card-body mb-0 text-secondary">This ledger has no transactions.</p>
+{% endfor %}
+</section>
+{{ pagination(paths, index, link) }}
+{% endblock %}

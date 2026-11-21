@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% block heading %}Time period{% endblock %}
+{% block actions %}<div class="col-auto ms-auto"><a class="btn" href="{{ link('index.html') }}">All time</a></div>{% endblock %}
 {% block body %}
-<header class="page-heading"><h1>Income &amp; spending</h1></header>
 {% for label, periods in [('By year', years), ('By month', months)] %}
 {% if periods %}
-<section class="card account-group">
-  <h2 class="card-header">{{ label }}</h2>
-  <ul class="period-list">
+<section class="card mb-3">
+  <div class="card-header"><h2 class="card-title">{{ label }}</h2></div>
+  <ul class="card-body list-unstyled d-flex flex-wrap gap-2 m-0">
   {% for period in periods %}
-    <li><a href="{{ link('activity/' ~ period ~ '/index.html') }}">{{ period }}</a></li>
+    <li><a class="btn btn-sm" href="{{ link('income/' ~ period ~ '/index.html') }}">{{ period }}</a></li>
   {% endfor %}
   </ul>
 </section>

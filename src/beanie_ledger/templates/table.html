@@ -1,22 +1,14 @@
 {% extends "base.html" %}
-{% from "components.html" import totals_strip, pagination, account_ref %}
+{% from "components.html" import totals_strip, pagination, account_ref, period_tabs %}
+{% block pretitle %}{% if back and not period %}<div class="page-pretitle"><a href="{{ link('reports/index.html') }}">Saved queries</a></div>{% endif %}{% endblock %}
 {% block body %}
-<header class="page-heading">
-  <a class="back-link" href="{{ link('activity/index.html' if period else 'reports/index.html') }}">{{ 'All periods' if period else 'All reports' }}</a>
-  <h1>{{ title }}</h1>
-  {% if period %}
-  <nav class="period-links" aria-label="Period reports">
-    <a href="{{ link('activity/' ~ period ~ '/index.html') }}"{% if show_accounts %} aria-current="true"{% endif %}>Categories</a>
-    <a href="{{ link('activity/' ~ period ~ '/payees/index.html') }}"{% if not show_accounts %} aria-current="true"{% endif %}>Payees</a>
-  </nav>
-  {% endif %}
-</header>
+{% if period %}{{ period_tabs(period, link, 'categories' if show_accounts else 'payees') }}{% endif %}
 {{ totals_strip(totals, 'Period totals') }}
-<div class="section-heading">
-  <span class="text-secondary">{{ "{:,}".format(row_count) }} rows</span>
-  {% if csv_path %}<a class="btn" href="{{ link(csv_path) }}" download>Download CSV</a>{% endif %}
-</div>
 <div class="card">
+  <div class="card-header">
+    <span class="text-secondary">{{ "{:,}".format(row_count) }} rows</span>
+    {% if csv_path %}<div class="card-actions"><a class="btn" href="{{ link(csv_path) }}" download>Download CSV</a></div>{% endif %}
+  </div>
   <div class="table-responsive">
     <table class="table table-vcenter card-table">
       <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>

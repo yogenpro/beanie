@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
-<header class="page-heading"><h1>Accounts</h1></header>
 {% for root, accounts in groups.items() %}
-<section class="card account-group">
-  <h2 class="card-header">{{ root }}</h2>
+<section class="card mb-3">
+  <div class="card-header"><h2 class="card-title">{{ root }}</h2></div>
   <div class="table-responsive">
     <table class="table card-table table-vcenter">
       <thead><tr><th scope="col">Account</th><th scope="col">Opened</th><th scope="col">Closed</th></tr></thead>

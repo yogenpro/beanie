@@ -1,6 +1,6 @@
 """Build and publish an ordinary directory of static files."""
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from hashlib import sha256
@@ -16,8 +16,10 @@ import re
 import tomllib
 
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
+from beancount.core import data
 
 from .model import BuildError, Ledger
+from .statements import ending_statements, income_statement, monthly_activity
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,11 @@ def money(value):
     return text + ".00"
 
 
+def axis_number(value):
+    text = format(value, ",f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
 def batches(items, size):
     iterator = iter(items)
     while chunk := list(islice(iterator, size)):
@@ -110,20 +117,29 @@ class Site:
             trim_blocks=True,
             lstrip_blocks=True,
         )
-        self.environment.filters.update(money=money, cell=table_cell)
+        self.environment.filters.update(money=money, cell=table_cell, axis_number=axis_number)
         self.account_paths = {name: f"accounts/{slug(name)}/index.html" for name in ledger.accounts}
+        report_names = list(ledger.queries) if settings.queries is None else settings.queries
+        self.saved_links = [(name, f"reports/{slug(name)}/index.html") for name in report_names]
         self.transaction_ids = {id(entry): index for index, entry in enumerate(ledger.transactions, 1)}
         self.css = self.write_styles()
+        sidebar = Path(__file__).with_name("static") / "sidebar.js"
+        self.sidebar_script = self.write_asset(sidebar.name, sidebar.read_bytes())
 
     def write_styles(self):
         directory = Path(__file__).with_name("static")
         tabler = (directory / "tabler.min.css").read_bytes()
         notice = (directory / "tabler-license.txt").read_bytes()
         styles = tabler + b"\n/*!\n" + notice + b"\n*/\n" + (directory / "site.css").read_bytes()
-        output_path = f"assets/site-{sha256(styles).hexdigest()[:16]}.css"
+        return self.write_asset("site.css", styles)
+
+    def write_asset(self, name, content):
+        filename = Path(name)
+        digest = sha256(content).hexdigest()[:16]
+        output_path = f"assets/{filename.stem}-{digest}{filename.suffix}"
         path = self.output / output_path
-        path.parent.mkdir()
-        path.write_bytes(styles)
+        path.parent.mkdir(exist_ok=True)
+        path.write_bytes(content)
         return output_path
 
     def page(self, template, path, title, active, **context):
@@ -139,7 +155,9 @@ class Site:
         output.write_text(
             self.environment.get_template(template).render(
                 title=title, site_title=self.title, active=active, link=link,
-                stylesheet=link(self.css), account_url=account_url,
+                stylesheet=link(self.css), sidebar_script=link(self.sidebar_script),
+                account_url=account_url,
+                saved_links=self.saved_links,
                 transaction_id=lambda entry: self.transaction_ids[id(entry)],
                 **context,
             ),
@@ -153,14 +171,20 @@ class Site:
 
     def render(self):
         ledger = self.ledger
-        year = str(ledger.latest.year) if ledger.latest else None
-        flows = ledger.flow_report(year) if year else ledger.flow_report("")
-        self.page(
-            "overview.html", "index.html", "Overview", "overview",
-            latest=ledger.latest, year=year, totals=flows.totals,
-            recent=ledger.transactions[-8:][::-1], account_count=len(ledger.accounts),
-            transaction_count=len(ledger.transactions),
-        )
+        balance_sheet, trial_balance = ending_statements(ledger)
+        for title, path, active, columns in (
+            ("Balance Sheet", "balance-sheet/index.html", "balance", [balance_sheet[:1], balance_sheet[1:]]),
+            ("Trial Balance", "trial-balance/index.html", "trial", [trial_balance]),
+        ):
+            self.page("statement.html", path, title, active, columns=columns,
+                      currencies=ledger.currencies, chart=None, period=None, as_of=ledger.as_of)
+        self.render_income("index.html", "all")
+
+        journal = list(batches(reversed(ledger.transactions), self.settings.page_size)) or [[]]
+        journal_paths = self.numbered_paths("journal/index.html", len(journal))
+        for index, (path, entries) in enumerate(zip(journal_paths, journal)):
+            self.page("journal.html", path, "Journal", "journal", entries=entries,
+                      paths=journal_paths, index=index, count=len(ledger.transactions))
 
         grouped = defaultdict(list)
         for name, opened in ledger.accounts.items():
@@ -180,6 +204,7 @@ class Site:
                   years=[period for period in ledger.periods if len(period) == 4],
                   months=[period for period in ledger.periods if len(period) == 7])
         for period in ledger.periods:
+            self.render_income(f"income/{period}/index.html", period)
             report = ledger.flow_report(period)
             sections = (
                 ("Categories", ("Account", "Currency", "Net amount", "Type"), report.categories),
@@ -203,6 +228,14 @@ class Site:
             valuation_currency=ledger.currencies[0] if ledger.currencies else None,
         )
 
+        quotes = [(entry.date, entry.currency, entry.amount)
+                  for entry in reversed(ledger.entries) if isinstance(entry, data.Price)]
+        self.table_pages("commodities/index.html", "Commodities", "commodities",
+                         ("Date", "Commodity", "Quoted price"), quotes, back=False)
+        counts = sorted(Counter(type(entry).__name__ for entry in ledger.entries).items())
+        self.table_pages("statistics/index.html", "Statistics", "statistics",
+                         ("Directive", "Count"), counts, back=False)
+
         saved = []
         for report in ledger.query_reports(self.settings.queries):
             directory = f"reports/{slug(report.name)}"
@@ -212,8 +245,15 @@ class Site:
                 write_csv(self.output / csv_path, report.columns, report.rows)
             self.table_pages(path, report.name, "reports", report.columns, report.rows, csv_path=csv_path)
             saved.append((report.name, path, len(report.rows)))
-        self.page("reports.html", "reports/index.html", "Saved reports", "reports", reports=saved)
+        self.page("reports.html", "reports/index.html", "Query", "reports", reports=saved)
         self.page("404.html", "404.html", "Page not found", "")
+
+    def render_income(self, path, period):
+        ledger = self.ledger
+        chart = monthly_activity(ledger, period)
+        self.page("statement.html", path, "Income Statement", "income",
+                  columns=income_statement(ledger, period), currencies=ledger.currencies,
+                  chart=chart, period=period, as_of=None)
 
     def table_pages(self, first, title, active, columns, rows, **context):
         pages = list(batches(rows, self.settings.page_size)) or [[]]
@@ -224,6 +264,7 @@ class Site:
                 paths=paths, index=index, row_count=len(rows),
                 period=context.get("period"), csv_path=context.get("csv_path"),
                 totals=context.get("totals", ()), show_accounts=context.get("show_accounts", False),
+                back=context.get("back", True),
             )
 
 

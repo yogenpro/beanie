@@ -5,28 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title }} · {{ site_title }}</title>
   <link rel="stylesheet" href="{{ stylesheet }}">
+  <script src="{{ sidebar_script }}" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#content">Skip to content</a>
-  <header class="masthead">
-    <div class="container-xl">
-      <a class="ledger-brand" href="{{ link('index.html') }}"><span class="brand-mark" aria-hidden="true">B</span>{{ site_title }}</a>
-      <nav class="ledger-nav" aria-label="Main navigation">
-        {% for key, label, path in [
-          ('overview', 'Overview', 'index.html'),
-          ('accounts', 'Accounts', 'accounts/index.html'),
-          ('activity', 'Income & spending', 'activity/index.html'),
-          ('holdings', 'Holdings', 'holdings/index.html'),
-          ('reports', 'Saved reports', 'reports/index.html')
-        ] %}
-        <a href="{{ link(path) }}"{% if active == key %} aria-current="true"{% endif %}>{{ label }}</a>
-        {% endfor %}
+{% from "icons.html" import icon %}
+{% macro brand() -%}
+<a class="navbar-brand" href="{{ link('index.html') }}" aria-label="{{ site_title }}" title="{{ site_title }}">
+  <span class="avatar avatar-sm bg-blue-lt text-blue" aria-hidden="true">B</span>
+  <span class="brand-name h4 mb-0 text-truncate">{{ site_title }}</span>
+</a>
+{%- endmacro %}
+{% macro report_link(key, label, path, glyph) -%}
+<li class="nav-item{% if active == key %} active{% endif %}{% if key is none %} query-shortcut{% endif %}">
+  <a class="nav-link" href="{{ link(path) }}" aria-label="{{ label }}" title="{{ label }}"{% if active == key %} aria-current="page"{% endif %}>
+    <span class="nav-link-icon">{{ icon(glyph) }}</span>
+    <span class="nav-link-title">{{ label }}</span>
+  </a>
+</li>
+{%- endmacro %}
+{% macro report_menu() -%}
+<ul class="navbar-nav">
+  <li class="nav-section-title">Reports</li>
+  {{ report_link('income', 'Income Statement', 'index.html', 'chart-bar') }}
+  {{ report_link('balance', 'Balance Sheet', 'balance-sheet/index.html', 'scale') }}
+  {{ report_link('trial', 'Trial Balance', 'trial-balance/index.html', 'list-check') }}
+  {{ report_link('journal', 'Journal', 'journal/index.html', 'book') }}
+  {{ report_link('reports', 'Query', 'reports/index.html', 'list-search') }}
+  {% if saved_links | length <= 5 %}
+  {% for label, path in saved_links %}
+  {{ report_link(none, label, path, 'file-description') }}
+  {% endfor %}
+  {% endif %}
+  <li class="nav-section-title">Ledger</li>
+  {{ report_link('accounts', 'Go to account', 'accounts/index.html', 'wallet') }}
+  {{ report_link('holdings', 'Holdings', 'holdings/index.html', 'briefcase') }}
+  {{ report_link('commodities', 'Commodities', 'commodities/index.html', 'coins') }}
+  {{ report_link('statistics', 'Statistics', 'statistics/index.html', 'chart-pie') }}
+</ul>
+{%- endmacro %}
+<a class="visually-hidden-focusable skip-link" href="#content">Skip to main content</a>
+<div class="page">
+  <aside class="ledger-sidebar navbar navbar-vertical navbar-expand-lg d-none d-lg-flex">
+    <div class="container-fluid">
+      <div class="sidebar-heading">
+        {{ brand() }}
+        <button type="button" class="sidebar-toggle btn btn-sm btn-icon btn-ghost-secondary"
+                aria-controls="sidebar-navigation" aria-expanded="true"
+                aria-label="Fold sidebar" title="Fold sidebar" hidden>
+          <span class="sidebar-fold-icon">{{ icon('layout-sidebar-left-collapse') }}</span>
+          <span class="sidebar-expand-icon">{{ icon('layout-sidebar-left-expand') }}</span>
+        </button>
+      </div>
+      <nav class="navbar-collapse pt-2" id="sidebar-navigation" aria-label="Ledger navigation">
+        {{ report_menu() }}
       </nav>
     </div>
-  </header>
-  <main id="content" class="container-xl main-content">
-    {% block body %}{% endblock %}
-  </main>
-  <footer class="container-xl ledger-footer">Generated with Beanie</footer>
+  </aside>
+  <div class="page-wrapper">
+    <header class="navbar d-lg-none">
+      <div class="container-xl flex-nowrap gap-2">
+        {{ brand() }}
+        <details class="mobile-menu position-relative ms-auto">
+          <summary class="btn btn-sm btn-outline-secondary">Menu</summary>
+          <nav class="dropdown-menu show p-2" aria-label="Ledger navigation">
+            {{ report_menu() }}
+          </nav>
+        </details>
+      </div>
+    </header>
+    <main id="content" class="page-body">
+      <div class="container-xl">
+        <header class="page-header mt-0 mb-4">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              {% block pretitle %}{% endblock %}
+              <h1 class="page-title">{% block heading %}{{ title }}{% endblock %}</h1>
+              {% block subtitle %}{% endblock %}
+            </div>
+            {% block actions %}
+            {% if active in ('income', 'activity') %}
+            <div class="col-auto ms-auto">
+              <a class="btn" href="{{ link('activity/index.html') }}">Time period</a>
+            </div>
+            {% endif %}
+            {% endblock %}
+          </div>
+        </header>
+        {% block body %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
 </body>
 </html>

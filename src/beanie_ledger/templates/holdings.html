@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% from "components.html" import account_ref %}
+{% block subtitle %}
+{% if as_of %}<div class="text-secondary mt-1">Ledger positions as of {{ as_of }}{% if valuation_currency %}<span class="mx-1">·</span>Market values in {{ valuation_currency }}{% endif %}</div>{% endif %}
+{% endblock %}
 {% block body %}
-<header class="page-heading">
-  <h1>Holdings</h1>
-  {% if as_of %}<p class="text-secondary">Ledger positions as of {{ as_of }}{% if valuation_currency %}<span class="separator">·</span>Market values in {{ valuation_currency }}{% endif %}</p>{% endif %}
-</header>
 <section class="card">
   <div class="table-responsive">
     <table class="table table-vcenter card-table">

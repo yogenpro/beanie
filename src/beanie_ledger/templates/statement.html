@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% from "components.html" import period_tabs %}
+{% macro statement_cells(row) %}
+<span class="statement-account" style="--depth:{{ row.depth }}">
+  {% set url = account_url(row.account) if row.account else none %}
+  {% if url %}<a href="{{ url }}">{{ row.label }}</a>{% else %}{{ row.label }}{% endif %}
+</span>
+{% for currency in currencies %}
+<span class="statement-amount">{% if currency in row.amounts %}{{ row.amounts[currency] | money }}<span class="visually-hidden"> {{ currency }}</span>{% endif %}</span>
+{% endfor %}
+<span class="statement-amount">
+  {% for currency, number in row.amounts | dictsort if currency not in currencies %}
+  <span class="d-block">{{ number | money }} {{ currency }}</span>
+  {% endfor %}
+</span>
+{% endmacro %}
+{% macro statement_card(section) %}
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">{{ section.name }}</h2>
+  </div>
+  <div style="--statement-currencies:{{ currencies | length + 1 }}">
+    <div class="statement-row bg-surface-secondary text-secondary text-uppercase small fw-medium" aria-hidden="true">
+      <span>Account</span>
+      {% for currency in currencies %}<span class="statement-amount">{{ currency }}</span>{% endfor %}
+      <span class="statement-amount">Other</span>
+    </div>
+    {% for node in section.tree recursive %}
+    {% set weight = ' fw-semibold' if not node.row.depth else '' %}
+    {% if node.children %}
+    <details class="statement-branch" open>
+      <summary class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</summary>
+      {{ loop(node.children) }}
+    </details>
+    {% else %}
+    <div class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</div>
+    {% endif %}
+    {% else %}
+    <p class="p-3 text-secondary mb-0">No balances for this section.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endmacro %}
+{% block subtitle %}
+<div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+  <span class="badge bg-secondary-lt">At cost</span>
+  <span class="text-secondary">
+    {% if period and period != 'all' %}
+    {{ period }} <span class="mx-1">·</span><a href="{{ link('index.html') }}">All time</a>
+    {% elif period %}All time
+    {% elif as_of %}As of <time datetime="{{ as_of }}">{{ as_of }}</time>
+    {% endif %}
+  </span>
+</div>
+{% endblock %}
+{% block body %}
+{% if chart %}
+<figure class="card mb-3">
+  <figcaption class="card-header flex-wrap gap-2">
+    <span class="card-title">Monthly income and expenses</span>
+    <span class="card-actions d-flex flex-wrap align-items-center gap-3 text-secondary">
+      <span><span class="status-dot bg-orange me-1" aria-hidden="true"></span> Expenses</span>
+      <span><span class="status-dot bg-primary me-1" aria-hidden="true"></span> Income</span>
+      <span class="badge bg-blue-lt">{{ chart.currency }}</span>
+    </span>
+  </figcaption>
+  <div class="card-body">
+    <div class="chart-frame">
+      <div class="chart-axis small text-secondary" aria-hidden="true">
+        {% for tick in chart.ticks %}<span>{{ tick | axis_number }}</span>{% endfor %}
+      </div>
+      <div class="chart-plot">
+        <div class="chart-grid">
+          {% for bar in chart.bars %}
+          {% set tag = 'a' if bar.has_report else 'span' %}
+          {% set description = bar.month ~ '. Income ' ~ (bar.income | money) ~ ' ' ~ chart.currency ~ '. Expenses ' ~ (bar.expenses | money) ~ ' ' ~ chart.currency ~ '.' if bar.has_report else bar.month ~ '. No transactions recorded.' %}
+          <{{ tag }} class="chart-month text-secondary" {% if bar.has_report %}href="{{ link('income/' ~ bar.month ~ '/index.html') }}"{% else %}role="img"{% endif %} aria-label="{{ description }}" title="{{ description }}">
+            <span class="chart-half chart-above" aria-hidden="true">
+              <span class="bg-orange" style="--height:{{ bar.expense_height if bar.expenses > 0 else 0 }}%"></span>
+              <span class="bg-primary" style="--height:{{ bar.income_height if bar.income < 0 else 0 }}%"></span>
+            </span>
+            <span class="chart-half" aria-hidden="true">
+              <span class="bg-primary" style="--height:{{ bar.income_height if bar.income > 0 else 0 }}%"></span>
+              <span class="bg-orange" style="--height:{{ bar.expense_height if bar.expenses < 0 else 0 }}%"></span>
+            </span>
+            <span class="chart-label small pt-1 text-nowrap" aria-hidden="true">
+              <span class="chart-label-full">{{ bar.month }}</span>
+              <span class="chart-label-compact">{{ bar.month[5:] }}</span>
+            </span>
+          </{{ tag }}>
+          {% endfor %}
+        </div>
+        {% if chart.years | length > 1 %}
+        <div class="chart-years small text-secondary" aria-hidden="true">
+          {% for year, count in chart.years %}
+          <div class="chart-year" style="--months:{{ count }}"><span>{{ year }}</span></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</figure>
+{% endif %}
+{% if period and period != 'all' %}
+{{ period_tabs(period, link, 'statement') }}
+{% endif %}
+<div class="row g-3">
+  {% for sections in columns %}
+  <div class="{% if columns | length == 1 %}col-12{% else %}col-12 col-xl-6{% endif %}">
+    <div class="d-flex flex-column gap-3">
+      {% for section in sections %}{{ statement_card(section) }}{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

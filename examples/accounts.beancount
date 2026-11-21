@@ -1,11 +1,19 @@
-2025-01-01 open Assets:Checking USD
-2025-01-01 open Assets:Reserves USD
-2025-01-01 open Assets:Travel-Cash EUR
-2025-01-01 open Assets:Investments
-2025-01-01 open Equity:Opening-Balances
-2025-01-01 open Liabilities:Card USD
-2025-01-01 open Expenses:Coffee USD
-2025-01-01 open Expenses:Groceries USD
-2025-01-01 open Expenses:Housing USD
-2025-01-01 open Expenses:Transit EUR
-2025-01-01 open Income:Salary USD
+2023-01-01 open Assets:Checking USD
+2023-01-01 open Assets:Reserves USD
+2023-01-01 open Assets:Travel-Cash EUR
+2023-01-01 open Assets:Investments
+2023-01-01 open Equity:Opening-Balances
+2023-01-01 open Liabilities:Card USD
+2023-01-01 open Expenses:Coffee USD
+2023-01-01 open Expenses:Dining USD
+2023-01-01 open Expenses:Groceries USD
+2023-01-01 open Expenses:Home:Repairs USD
+2023-01-01 open Expenses:Housing USD
+2023-01-01 open Expenses:Leisure USD
+2023-01-01 open Expenses:Transit EUR
+2023-01-01 open Expenses:Transport USD
+2023-01-01 open Expenses:Travel USD
+2023-01-01 open Expenses:Utilities:Electricity USD
+2023-01-01 open Expenses:Utilities:Internet USD
+2023-01-01 open Income:Bonus USD
+2023-01-01 open Income:Salary USD

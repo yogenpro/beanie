@@ -1,30 +1,28 @@
 {% extends "base.html" %}
 {% from "components.html" import pagination, postings %}
+{% block pretitle %}<div class="page-pretitle"><a href="{{ link('accounts/index.html') }}">Accounts</a></div>{% endblock %}
+{% block heading %}{{ name.replace(':', ' / ') }}{% endblock %}
+{% block subtitle %}<div class="text-secondary mt-1">Opened {{ opened }}{% if closed %}<span class="mx-1">·</span>Closed {{ closed }}{% endif %}</div>{% endblock %}
 {% block body %}
-<header class="page-heading">
-  <a class="back-link" href="{{ link('accounts/index.html') }}">All accounts</a>
-  <h1 class="account-name">{{ name.replace(':', ' / ') }}</h1>
-  <p class="text-secondary">Opened {{ opened }}{% if closed %}<span class="separator">·</span>Closed {{ closed }}{% endif %}</p>
-</header>
 {% if positions %}
-<section class="card position-card">
-  <h2>Ending positions</h2>
-  <ul class="position-list">
+<section class="card mb-3">
+  <div class="card-header"><h2 class="card-title">Ending positions</h2></div>
+  <ul class="list-group list-group-flush">
     {% for pos in positions %}
-    <li><span class="amount">{{ pos.units.number | money }} {{ pos.units.currency }}</span>{% if pos.cost %}<span class="text-secondary"> at {{ pos.cost.number | money }} {{ pos.cost.currency }} per unit{% if pos.cost.date %} · {{ pos.cost.date }}{% endif %}</span>{% endif %}</li>
+    <li class="list-group-item"><span class="amount fw-semibold">{{ pos.units.number | money }} {{ pos.units.currency }}</span>{% if pos.cost %}<span class="text-secondary"> at {{ pos.cost.number | money }} {{ pos.cost.currency }} per unit{% if pos.cost.date %} · {{ pos.cost.date }}{% endif %}</span>{% endif %}</li>
     {% endfor %}
   </ul>
 </section>
 {% endif %}
-<div class="section-heading"><h2>Register</h2><span class="text-secondary">{{ "{:,}".format(row_count) }} transactions</span></div>
 <section class="card" aria-label="Register entries">
+<div class="card-header"><h2 class="card-title">Register</h2><span class="card-actions text-secondary">{{ "{:,}".format(row_count) }} transactions</span></div>
 {% for entry, changes in rows %}
-<details class="recent-entry register-entry" id="transaction-{{ transaction_id(entry) }}">
-  <summary>
-    <time datetime="{{ entry.date }}">{{ entry.date }}</time>
+<details class="transaction-entry register-entry" id="transaction-{{ transaction_id(entry) }}">
+  <summary class="py-3 pe-3">
+    <time class="text-secondary readable-date" datetime="{{ entry.date }}">{{ entry.date }}</time>
     <span class="entry-copy">
-      <span class="entry-name">{{ entry.payee or entry.narration or 'Transaction' }}</span>
-      {% if entry.payee and entry.narration %}<span class="entry-note">{{ entry.narration }}</span>{% endif %}
+      <span class="fw-semibold text-break">{{ entry.payee or entry.narration or 'Transaction' }}</span>
+      {% if entry.payee and entry.narration %}<span class="text-secondary text-break">{{ entry.narration }}</span>{% endif %}
     </span>
     <span class="entry-changes amount">
       {% for currency, amount in changes %}<span>{{ amount | money }} {{ currency }}</span>{% endfor %}
