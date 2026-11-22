@@ -1,14 +1,21 @@
 {% extends "base.html" %}
+{% block head %}<script defer src="{{ link(browser_script) }}"></script>{% endblock %}
 {% block body %}
+{% if groups %}
+<label class="form-label mb-3" hidden>Find an account
+  <input type="search" class="form-control mt-1" data-account-search placeholder="Search account names">
+</label>
+<p class="text-secondary" data-no-accounts hidden>No matching accounts.</p>
+{% endif %}
 {% for root, accounts in groups.items() %}
-<section class="card mb-3">
+<section class="card mb-3" data-account-group>
   <div class="card-header"><h2 class="card-title">{{ root }}</h2></div>
   <div class="table-responsive">
     <table class="table card-table table-vcenter">
       <thead><tr><th scope="col">Account</th><th scope="col">Opened</th><th scope="col">Closed</th></tr></thead>
       <tbody>
       {% for name, opened, closed in accounts %}
-      <tr><td><a href="{{ account_url(name) }}">{{ name.split(':', 1)[-1].replace(':', ' / ') }}</a></td>
+      <tr data-account="{{ name }}"><td><a href="{{ account_url(name) }}">{{ name.split(':', 1)[-1].replace(':', ' / ') }}</a></td>
       <td class="readable-date">{{ opened }}</td><td class="readable-date">{{ closed or '—' }}</td></tr>
       {% endfor %}
       </tbody>

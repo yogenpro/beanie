@@ -45,6 +45,47 @@
 {% if url %}<a href="{{ url }}">{{ account }}</a>{% else %}{{ account }}{% endif %}
 {%- endmacro %}
 
+{% macro report_tabs(items, current, link, label) -%}
+<nav class="nav nav-pills flex-wrap gap-1 mb-3" aria-label="{{ label }}">
+  {% for key, title, path in items %}
+  <a class="nav-link{% if key == current %} active{% endif %}" href="{{ link(path) }}"{% if key == current %} aria-current="page"{% endif %}>{{ title }}</a>
+  {% endfor %}
+</nav>
+{%- endmacro %}
+
+{% macro amount_list(items) -%}
+{% for currency, number in items %}<span class="d-block">{{ number | money }} {{ currency }}</span>{% else %}—{% endfor %}
+{%- endmacro %}
+
+{% macro tags(entry) -%}
+{% if entry.tags or entry.links %}
+<span class="d-flex flex-wrap gap-1 mt-1">
+  {% for tag in entry.tags | sort %}<span class="badge bg-primary-lt">#{{ tag }}</span>{% endfor %}
+  {% for link in entry.links | sort %}<span class="badge bg-secondary-lt">^{{ link }}</span>{% endfor %}
+</span>
+{% endif %}
+{%- endmacro %}
+
+{% macro trend_plot(trend, currency, label) -%}
+{% if trend %}
+<div class="trend-frame">
+  <div class="d-flex flex-column justify-content-between small text-secondary">
+    <span>{{ trend.high | axis_number }}</span><span>{{ trend.low | axis_number }}</span>
+  </div>
+  <svg class="trend-plot" viewBox="0 0 800 120" preserveAspectRatio="none" role="img" aria-label="{{ label }} ({{ currency }})">
+    <path d="M8 8H792 M8 60H792 M8 112H792" class="trend-grid" />
+    <polyline points="{% for x, y, _, _ in trend.points %}{{ x }},{{ y }} {% endfor %}" />
+    {% for x, y, date, value in trend.points %}
+    <circle cx="{{ x }}" cy="{{ y }}" r="2.5"><title>{{ date }} · {{ value | money }} {{ currency }}</title></circle>
+    {% endfor %}
+  </svg>
+  <div class="trend-dates d-flex justify-content-between small text-secondary">
+    <span>{{ trend.points[0][2] }}</span><span>{{ trend.points[-1][2] }}</span>
+  </div>
+</div>
+{% endif %}
+{%- endmacro %}
+
 {% macro postings(entry, account_url) -%}
 <div class="table-responsive mx-3 mb-3">
   <table class="table table-sm mb-0 posting-table">

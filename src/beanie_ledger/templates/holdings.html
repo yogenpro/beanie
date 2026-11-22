@@ -1,27 +1,50 @@
 {% extends "base.html" %}
-{% from "components.html" import account_ref %}
+{% from "components.html" import account_ref, amount_list, report_tabs %}
 {% block subtitle %}
-{% if as_of %}<div class="text-secondary mt-1">Ledger positions as of {{ as_of }}{% if valuation_currency %}<span class="mx-1">·</span>Market values in {{ valuation_currency }}{% endif %}</div>{% endif %}
+{% if as_of %}<div class="text-secondary mt-1">Positions as of {{ as_of }}{% if valuation_currency %} · Market values in {{ valuation_currency }}{% endif %}</div>{% endif %}
 {% endblock %}
 {% block body %}
+{{ report_tabs(tabs, mode, link, 'Holdings views') }}
 <section class="card">
   <div class="table-responsive">
     <table class="table table-vcenter card-table">
-      <thead><tr><th scope="col">Account</th><th scope="col" class="amount">Units</th><th scope="col" class="amount">Lot cost per unit</th>{% if valuation_currency %}<th scope="col" class="amount">Market value</th><th scope="col">Price date</th>{% endif %}</tr></thead>
+      <thead><tr>
+        <th scope="col">{{ {'all': 'Account', 'account': 'Account', 'currency': 'Currency', 'cost': 'Cost currency'}[mode] }}</th>
+        <th scope="col" class="amount">Units</th>
+        {% if mode == 'all' %}<th scope="col" class="amount">Lot cost per unit</th>{% endif %}
+        <th scope="col" class="amount">Cost basis</th>
+        <th scope="col" class="amount">Market value</th>
+        {% if mode == 'all' %}<th scope="col">Price date</th>{% endif %}
+      </tr></thead>
       <tbody>
-      {% for account, pos, valuation in holdings %}
+      {% if mode == 'all' %}
+      {% for account, pos, cost, valuation in holdings %}
       <tr>
         <td>{{ account_ref(account, account_url) }}</td>
         <td class="amount">{{ pos.units.number | money }} {{ pos.units.currency }}</td>
         <td class="amount">{% if pos.cost %}{{ pos.cost.number | money }} {{ pos.cost.currency }}{% else %}—{% endif %}</td>
-        {% if valuation_currency %}
+        <td class="amount">{{ cost.number | money }} {{ cost.currency }}</td>
         <td class="amount">{% if valuation %}{{ valuation[0] | money }} {{ valuation[1] }}{% else %}Unpriced{% endif %}</td>
         <td class="readable-date">{{ valuation[2] if valuation and valuation[2] else '—' }}</td>
-        {% endif %}
       </tr>
       {% else %}
-      <tr><td colspan="{{ 5 if valuation_currency else 3 }}" class="text-secondary">No open asset or liability positions.</td></tr>
+      <tr><td colspan="6" class="text-secondary">No open asset or liability positions.</td></tr>
       {% endfor %}
+      {% else %}
+      {% for group, units, costs, market, unpriced in totals %}
+      <tr>
+        <td>{% if mode == 'account' %}{{ account_ref(group, account_url) }}{% else %}{{ group }}{% endif %}</td>
+        <td class="amount">{{ amount_list(units) }}</td>
+        <td class="amount">{{ amount_list(costs) }}</td>
+        <td class="amount">
+          {% if market %}{{ amount_list(market) }}{% endif %}
+          {% if unpriced %}<span class="d-block text-secondary">{{ unpriced }} unpriced {{ 'lot' if unpriced == 1 else 'lots' }}</span>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-secondary">No open asset or liability positions.</td></tr>
+      {% endfor %}
+      {% endif %}
       </tbody>
     </table>
   </div>

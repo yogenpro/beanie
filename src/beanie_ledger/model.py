@@ -52,6 +52,7 @@ class Ledger:
         self.transactions = []
         self.registers = defaultdict(list)
         self.balances = defaultdict(inventory.Inventory)
+        self.monthly_positions = defaultdict(lambda: defaultdict(inventory.Inventory))
         self.queries = {}
         self.expenses = self.options["name_expenses"]
         self.income = self.options["name_income"]
@@ -79,6 +80,10 @@ class Ledger:
         self.as_of = max((entry.date for entry in self.entries), default=None)
         self.price_map = prices.build_price_map(self.entries)
         self.accounts = dict(sorted(self.accounts.items()))
+        self.account_tree = sorted({
+            ":".join(account.split(":")[:depth])
+            for account in self.accounts for depth in range(1, len(account.split(":")) + 1)
+        })
         self.periods = sorted(
             {str(entry.date.year) for entry in self.transactions}
             | {entry.date.isoformat()[:7] for entry in self.transactions},
@@ -90,9 +95,12 @@ class Ledger:
         periods = ("all", str(entry.date.year), entry.date.isoformat()[:7])
         for posting in entry.postings:
             self.balances[posting.account].add_position(posting)
+            self.monthly_positions[periods[-1]][posting.account].add_position(posting)
             units = posting.units
-            changes[posting.account][units.currency] += units.number
-            root = posting.account.split(":")[0]
+            parts = posting.account.split(":")
+            for depth in range(1, len(parts) + 1):
+                changes[":".join(parts[:depth])][units.currency] += units.number
+            root = parts[0]
             if root in (self.expenses, self.income):
                 amount = units.number if root == self.expenses else -units.number
                 cost = convert.get_cost(posting)
@@ -129,7 +137,31 @@ class Ledger:
         return FlowReport(totals, categories, payees)
 
     def register(self, account):
-        return reversed(self.registers.get(account, ()))
+        balances = defaultdict(Decimal)
+        rows = []
+        for entry, changes in self.registers.get(account, ()):
+            for currency, amount in changes:
+                balances[currency] += amount
+            changed_currencies = {currency for currency, _ in changes}
+            amounts = sorted((currency, amount) for currency, amount in balances.items()
+                             if amount or currency in changed_currencies)
+            rows.append((entry, changes, amounts))
+        return reversed(rows)
+
+    def account_months(self, account):
+        changes = defaultdict(lambda: defaultdict(Decimal))
+        for entry, amounts in self.registers.get(account, ()):
+            for currency, amount in amounts:
+                changes[entry.date.isoformat()[:7]][currency] += amount
+        balances = defaultdict(Decimal)
+        months = []
+        for month, values in sorted(changes.items()):
+            for currency, amount in values.items():
+                balances[currency] += amount
+            months.append((month, sorted(values.items()), sorted(
+                (currency, amount) for currency, amount in balances.items() if amount or currency in values
+            )))
+        return months
 
     def positions(self, account):
         return sorted(self.balances[account], key=str)

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+<article class="card">
+  <div class="card-body">
+    <h2 class="h3">Statement charts</h2>
+    <p>Choose a period and valuation above the chart. Use the tabs below it to switch views. In stacked mode, an account segment opens its journal.</p>
+    <h2 class="h3">Valuation</h2>
+    <p>Market value uses ledger quotes up to the selected date and falls back to lot cost when a quote is missing. Converted amounts use dated quotes, including a hop via the lot currency if available. Positions without a conversion rate remain in their original units.</p>
+    <p>Income and expense charts value each month at month end or the latest ledger date, whichever comes first. Quarterly and yearly bars combine those monthly values.</p>
+    <h2 class="h3">Ledger and saved queries</h2>
+    <p class="mb-0">The site reflects the ledger at build time. Saved Beancount queries run during the build. Use your local ledger tools to run ad hoc queries, edit entries, or import statements.</p>
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "components.html" import account_ref %}
+{% block body %}
+<section class="card mb-3">
+  <div class="card-header"><h2 class="card-title">Postings per account</h2></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Account</th><th scope="col" class="amount">Postings</th></tr></thead>
+      <tbody>
+      {% for name, count in postings %}
+      <tr><td>{{ account_ref(name, account_url) }}</td><td class="amount">{{ "{:,}".format(count) }}</td></tr>
+      {% else %}
+      <tr><td colspan="2" class="text-secondary">No postings recorded.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="card mb-3">
+  <div class="card-header"><h2 class="card-title">Update activity</h2></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Account</th><th scope="col">Last transaction</th><th scope="col">Last balance check</th><th scope="col" class="amount">Checked amount</th></tr></thead>
+      <tbody>
+      {% for name, latest, check in activity %}
+      <tr>
+        <td>{{ account_ref(name, account_url) }}</td><td>{{ latest or '—' }}</td><td>{{ check.date if check else '—' }}</td>
+        <td class="amount">{% if check %}{{ check.amount.number | money }} {{ check.amount.currency }}{% else %}—{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-secondary">No accounts recorded.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="card">
+  <div class="card-header"><h2 class="card-title">Entries per type</h2></div>
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Type</th><th scope="col" class="amount">Entries</th></tr></thead>
+      <tbody>{% for kind, count in counts %}<tr><td>{{ kind }}</td><td class="amount">{{ "{:,}".format(count) }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

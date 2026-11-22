@@ -1,0 +1,14 @@
+{% from "components.html" import trend_plot %}
+{% if series %}
+<details class="card mb-3 report-charts" open>
+  <summary class="card-header report-disclosure"><h2 class="card-title">Account balance</h2></summary>
+  <div class="card-body">
+    {% for currency, line in series %}
+    <div{% if not loop.first %} class="mt-3"{% endif %}>
+      <div class="text-secondary fw-medium mb-2">{{ currency }}</div>
+      {{ trend_plot(line, currency, 'Monthly ending balance') }}
+    </div>
+    {% endfor %}
+  </div>
+</details>
+{% endif %}

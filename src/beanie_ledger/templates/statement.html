@@ -1,117 +1,77 @@
 {% extends "base.html" %}
 {% from "components.html" import period_tabs %}
-{% macro statement_cells(row) %}
-<span class="statement-account" style="--depth:{{ row.depth }}">
-  {% set url = account_url(row.account) if row.account else none %}
-  {% if url %}<a href="{{ url }}">{{ row.label }}</a>{% else %}{{ row.label }}{% endif %}
-</span>
-{% for currency in currencies %}
-<span class="statement-amount">{% if currency in row.amounts %}{{ row.amounts[currency] | money }}<span class="visually-hidden"> {{ currency }}</span>{% endif %}</span>
-{% endfor %}
-<span class="statement-amount">
-  {% for currency, number in row.amounts | dictsort if currency not in currencies %}
-  <span class="d-block">{{ number | money }} {{ currency }}</span>
-  {% endfor %}
-</span>
-{% endmacro %}
-{% macro statement_card(section) %}
-<section class="card">
-  <div class="card-header">
-    <h2 class="card-title">{{ section.name }}</h2>
-  </div>
-  <div style="--statement-currencies:{{ currencies | length + 1 }}">
-    <div class="statement-row bg-surface-secondary text-secondary text-uppercase small fw-medium" aria-hidden="true">
-      <span>Account</span>
-      {% for currency in currencies %}<span class="statement-amount">{{ currency }}</span>{% endfor %}
-      <span class="statement-amount">Other</span>
-    </div>
-    {% for node in section.tree recursive %}
-    {% set weight = ' fw-semibold' if not node.row.depth else '' %}
-    {% if node.children %}
-    <details class="statement-branch" open>
-      <summary class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</summary>
-      {{ loop(node.children) }}
-    </details>
-    {% else %}
-    <div class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</div>
-    {% endif %}
-    {% else %}
-    <p class="p-3 text-secondary mb-0">No balances for this section.</p>
-    {% endfor %}
-  </div>
-</section>
-{% endmacro %}
+{% block head %}<script type="module" src="{{ link(report_script) }}"></script>{% endblock %}
 {% block subtitle %}
-<div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-  <span class="badge bg-secondary-lt">At cost</span>
-  <span class="text-secondary">
-    {% if period and period != 'all' %}
-    {{ period }} <span class="mx-1">·</span><a href="{{ link('index.html') }}">All time</a>
-    {% elif period %}All time
-    {% elif as_of %}As of <time datetime="{{ as_of }}">{{ as_of }}</time>
-    {% endif %}
-  </span>
-</div>
+{% if as_of %}<div class="text-secondary mt-1">As of <time datetime="{{ as_of }}">{{ as_of }}</time></div>{% endif %}
+{% endblock %}
+{% block actions %}
+{% if is_income %}
+<noscript><a class="btn" href="{{ link('activity/index.html') }}">Time period</a></noscript>
+{% endif %}
 {% endblock %}
 {% block body %}
-{% if chart %}
-<figure class="card mb-3">
-  <figcaption class="card-header flex-wrap gap-2">
-    <span class="card-title">Monthly income and expenses</span>
-    <span class="card-actions d-flex flex-wrap align-items-center gap-3 text-secondary">
-      <span><span class="status-dot bg-orange me-1" aria-hidden="true"></span> Expenses</span>
-      <span><span class="status-dot bg-primary me-1" aria-hidden="true"></span> Income</span>
-      <span class="badge bg-blue-lt">{{ chart.currency }}</span>
-    </span>
-  </figcaption>
-  <div class="card-body">
-    <div class="chart-frame">
-      <div class="chart-axis small text-secondary" aria-hidden="true">
-        {% for tick in chart.ticks %}<span>{{ tick | axis_number }}</span>{% endfor %}
+<div data-statement>
+  <div class="card mb-3">
+    <div class="card-body py-2">
+      <div class="report-controls" data-report-controls hidden>
+        <label class="form-label mb-0">{{ 'Time period' if is_income else 'As of' }}
+          <select class="form-select form-select-sm" data-period>
+            <option value="{{ link(landing) }}"{% if period == 'all' %} selected{% endif %}>{{ 'All time' if is_income else 'Latest' }}</option>
+            {% for year in periods if year | length == 4 %}
+            <optgroup label="{{ year }}">
+              <option value="{{ link(report_directory ~ '/' ~ year ~ '/index.html') }}"{% if period == year %} selected{% endif %}>{{ year }} · {{ 'Full year' if is_income else 'Year end' }}</option>
+              {% for month in periods if month.startswith(year ~ '-') %}
+              <option value="{{ link(report_directory ~ '/' ~ month ~ '/index.html') }}"{% if period == month %} selected{% endif %}>{{ month }}</option>
+              {% endfor %}
+            </optgroup>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="form-label mb-0">Valuation
+          <select class="form-select form-select-sm" data-valuation>
+            {% for mode, (label, asset) in valuations.items() %}
+            <option value="{{ mode }}" data-source="{{ link(asset) }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
       </div>
-      <div class="chart-plot">
-        <div class="chart-grid">
-          {% for bar in chart.bars %}
-          {% set tag = 'a' if bar.has_report else 'span' %}
-          {% set description = bar.month ~ '. Income ' ~ (bar.income | money) ~ ' ' ~ chart.currency ~ '. Expenses ' ~ (bar.expenses | money) ~ ' ' ~ chart.currency ~ '.' if bar.has_report else bar.month ~ '. No transactions recorded.' %}
-          <{{ tag }} class="chart-month text-secondary" {% if bar.has_report %}href="{{ link('income/' ~ bar.month ~ '/index.html') }}"{% else %}role="img"{% endif %} aria-label="{{ description }}" title="{{ description }}">
-            <span class="chart-half chart-above" aria-hidden="true">
-              <span class="bg-orange" style="--height:{{ bar.expense_height if bar.expenses > 0 else 0 }}%"></span>
-              <span class="bg-primary" style="--height:{{ bar.income_height if bar.income < 0 else 0 }}%"></span>
-            </span>
-            <span class="chart-half" aria-hidden="true">
-              <span class="bg-primary" style="--height:{{ bar.income_height if bar.income > 0 else 0 }}%"></span>
-              <span class="bg-orange" style="--height:{{ bar.expense_height if bar.expenses < 0 else 0 }}%"></span>
-            </span>
-            <span class="chart-label small pt-1 text-nowrap" aria-hidden="true">
-              <span class="chart-label-full">{{ bar.month }}</span>
-              <span class="chart-label-compact">{{ bar.month[5:] }}</span>
-            </span>
-          </{{ tag }}>
-          {% endfor %}
-        </div>
-        {% if chart.years | length > 1 %}
-        <div class="chart-years small text-secondary" aria-hidden="true">
-          {% for year, count in chart.years %}
-          <div class="chart-year" style="--months:{{ count }}"><span>{{ year }}</span></div>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
+      <noscript><span class="text-secondary">At cost{% if is_income %} · {{ 'All time' if period == 'all' else period }}{% endif %}</span></noscript>
     </div>
   </div>
-</figure>
-{% endif %}
-{% if period and period != 'all' %}
-{{ period_tabs(period, link, 'statement') }}
-{% endif %}
-<div class="row g-3">
-  {% for sections in columns %}
-  <div class="{% if columns | length == 1 %}col-12{% else %}col-12 col-xl-6{% endif %}">
-    <div class="d-flex flex-column gap-3">
-      {% for section in sections %}{{ statement_card(section) }}{% endfor %}
+  <details class="card mb-3 report-charts" open data-charts hidden>
+    <summary class="card-header report-disclosure"><h2 class="card-title">Charts</h2></summary>
+    <div class="card-body">
+      <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+        <label class="form-label mb-0" data-interval-control>Chart interval
+          <select class="form-select form-select-sm" data-interval>
+            <option value="month">Monthly</option>
+            <option value="quarter">Quarterly</option>
+            <option value="year">Yearly</option>
+          </select>
+        </label>
+        <label class="form-label mb-0" data-bar-control>Bar style
+          <select class="form-select form-select-sm" data-bars>
+            <option value="single">Single bars</option>
+            <option value="stacked">Stacked bars</option>
+          </select>
+        </label>
+        <label class="form-label mb-0" data-layout-control hidden>Chart style
+          <select class="form-select form-select-sm" data-layout>
+            <option value="treemap">Treemap</option>
+            <option value="sunburst">Sunburst</option>
+            <option value="icicle">Icicle</option>
+          </select>
+        </label>
+        <label class="form-label mb-0" data-currency-control hidden>Chart currency
+          <select class="form-select form-select-sm" data-currency></select>
+        </label>
+      </div>
+      <div data-chart-panel aria-label="Chart" aria-live="polite"></div>
+      <div data-chart-views class="nav nav-pills gap-1 mt-3" role="group" aria-label="Chart view"></div>
     </div>
-  </div>
-  {% endfor %}
+  </details>
+  <p class="text-secondary" data-report-status role="status" hidden></p>
+  {% if is_income and period != 'all' %}{{ period_tabs(period, link, 'statement') }}{% endif %}
+  <div data-statement-tables>{% include "statement_tables.html" %}</div>
 </div>
 {% endblock %}

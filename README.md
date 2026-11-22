@@ -1,10 +1,11 @@
 # Beanie
 
 Beanie is a static site generator for Beancount 3. It turns a validated ledger
-into a read-only site with native Tabler components and Fava's report structure. Explore the
-income statement, balance sheet, trial balance, transaction journal, account
-registers, holdings, commodity prices, and saved queries. Reports work without
-JavaScript. A small script remembers the desktop sidebar preference locally.
+into a read-only site with native Tabler components and Fava's report structure.
+Explore statements, the journal, account registers, holdings, commodity prices,
+events and documents, statistics, and saved queries. Tables and the main
+navigation are rendered at build time. Local scripts add chart controls and
+remember the desktop sidebar preference.
 
 ## Try it
 
@@ -32,7 +33,7 @@ is named `beanie-ledger` to distinguish it from the unrelated Beanie ODM.
 Install it from a Git tag or pin the full commit SHA in your project's lockfile.
 
 ```sh
-uv add 'beanie-ledger @ git+https://github.com/yogenpro/beanie.git@v0.1.0'
+uv add 'beanie-ledger @ git+https://github.com/yogenpro/beanie.git@v0.3.0'
 ```
 
 ## Options
@@ -50,14 +51,14 @@ The default is to run all saved Beancount `query` directives. Use `queries = []`
 to omit them. Selected query results appear as HTML tables. Enable CSV only if
 you intend to publish the selected query output as a downloadable file.
 
-The statements show booked amounts at cost. The balance sheet applies Beancount's
-closing entries in memory so the equity section reflects earnings and currency
-conversions. Income and spending drill-downs group native currencies and refunds
-reduce spending. The holdings page keeps native units,
-lot cost, and a market value in the first operating currency in separate
-columns. It uses prices recorded in the ledger and shows the price date or
-labels the position unpriced. A valid ledger build does not establish statement
-reconciliation or historical completeness.
+Statements default to booked amounts at cost. Select market value, native
+units, or conversion to an operating currency using dated ledger quotes. The
+balance sheet applies Beancount's closing entries in memory. Income charts
+offer account stacks, aggregate bars, and hierarchical treemap, sunburst, and
+icicle views. Account journals show changes and running balances. Holdings
+retain native units, costs, and market values, with summaries by account,
+currency, and cost currency. Document listings show directive names and dates.
+The build does not copy the attached files.
 
 ## Hosting
 

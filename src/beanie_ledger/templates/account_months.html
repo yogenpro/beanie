@@ -1,0 +1,20 @@
+{% extends "account.html" %}
+{% from "components.html" import amount_list, report_tabs %}
+{% block body %}
+{{ report_tabs(tabs, mode, link, 'Account views') }}
+{% include "account_chart.html" %}
+<section class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Month</th><th scope="col" class="amount">{{ 'Ending balance' if mode == 'balances' else 'Change' }}</th></tr></thead>
+      <tbody>
+      {% for month, changes, balances in months %}
+        <tr><td>{{ month }}</td><td class="amount">{{ amount_list(balances if mode == 'balances' else changes) }}</td></tr>
+      {% else %}
+        <tr><td colspan="2" class="text-secondary">No transactions on this account.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -4,6 +4,12 @@
 {% block body %}
 {% if period %}{{ period_tabs(period, link, 'categories' if show_accounts else 'payees') }}{% endif %}
 {{ totals_strip(totals, 'Period totals') }}
+{% if query %}
+<details class="card mb-3 report-charts">
+  <summary class="card-header report-disclosure"><h2 class="card-title">Beancount query</h2></summary>
+  <div class="card-body"><pre class="mb-0">{{ query }}</pre></div>
+</details>
+{% endif %}
 <div class="card">
   <div class="card-header">
     <span class="text-secondary">{{ "{:,}".format(row_count) }} rows</span>

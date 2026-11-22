@@ -1,9 +1,10 @@
-{% extends "base.html" %}
-{% from "components.html" import pagination, postings %}
-{% block pretitle %}<div class="page-pretitle"><a href="{{ link('accounts/index.html') }}">Accounts</a></div>{% endblock %}
-{% block heading %}{{ name.replace(':', ' / ') }}{% endblock %}
-{% block subtitle %}<div class="text-secondary mt-1">Opened {{ opened }}{% if closed %}<span class="mx-1">·</span>Closed {{ closed }}{% endif %}</div>{% endblock %}
+{% extends "account.html" %}
+{% from "components.html" import amount_list, pagination, report_tabs %}
+{% set mode = "journal" %}
+{% block head %}<script defer src="{{ link(browser_script) }}"></script>{% endblock %}
 {% block body %}
+{{ report_tabs(tabs, mode, link, 'Account views') }}
+{% include "account_chart.html" %}
 {% if positions %}
 <section class="card mb-3">
   <div class="card-header"><h2 class="card-title">Ending positions</h2></div>
@@ -15,9 +16,16 @@
 </section>
 {% endif %}
 <section class="card" aria-label="Register entries">
-<div class="card-header"><h2 class="card-title">Register</h2><span class="card-actions text-secondary">{{ "{:,}".format(row_count) }} transactions</span></div>
-{% for entry, changes in rows %}
-<details class="transaction-entry register-entry" id="transaction-{{ transaction_id(entry) }}">
+<div class="card-header"><h2 class="card-title">Account Journal</h2><span class="card-actions text-secondary">{{ "{:,}".format(row_count) }} transactions</span></div>
+{% if rows %}
+<div class="register-columns d-none d-sm-grid card-body bg-surface-secondary py-2 small text-secondary">
+  <span>Date</span><span>Transaction</span><span class="text-end">Change</span><span class="text-end">Balance</span>
+</div>
+{% endif %}
+{% for entry, changes, balances in rows %}
+{% set id = 'transaction-' ~ transaction_id(entry) %}
+{% set journal_url = link(journal_entry_path(entry)) ~ '#' ~ id %}
+<details class="transaction-entry register-entry" id="{{ id }}" data-journal-entry="{{ journal_url }}">
   <summary class="py-3 pe-3">
     <time class="text-secondary readable-date" datetime="{{ entry.date }}">{{ entry.date }}</time>
     <span class="entry-copy">
@@ -25,10 +33,13 @@
       {% if entry.payee and entry.narration %}<span class="text-secondary text-break">{{ entry.narration }}</span>{% endif %}
     </span>
     <span class="entry-changes amount">
-      {% for currency, amount in changes %}<span>{{ amount | money }} {{ currency }}</span>{% endfor %}
+      <span class="visually-hidden">Change</span>{{ amount_list(changes) }}
+    </span>
+    <span class="entry-changes amount text-secondary">
+      <span class="visually-hidden">Balance</span>{{ amount_list(balances) }}
     </span>
   </summary>
-  {{ postings(entry, account_url) }}
+  <div data-posting-detail class="pb-3 px-3"><a href="{{ journal_url }}">View postings in Journal</a></div>
 </details>
 {% else %}
 <p class="card-body text-secondary mb-0">No transactions on this account.</p>

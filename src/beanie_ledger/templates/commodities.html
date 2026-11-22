@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Pair</th><th scope="col">Latest quote</th><th scope="col" class="amount">Price</th></tr></thead>
+      <tbody>
+      {% for (base, quote), path, (date, amount) in pairs %}
+      <tr><td><a href="{{ link(path) }}">{{ base }} / {{ quote }}</a></td><td>{{ date }}</td><td class="amount">{{ amount | money }} {{ quote }}</td></tr>
+      {% else %}
+      <tr><td colspan="3" class="text-secondary">No commodity prices recorded.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% macro statement_cells(row) %}
+<span class="statement-account" style="--depth:{{ row.depth }}">
+  {% set url = account_url(row.account) if row.account else none %}
+  {% if url %}<a href="{{ url }}">{{ row.label }}</a>{% else %}{{ row.label }}{% endif %}
+</span>
+{% for currency in currencies %}
+<span class="statement-amount">{% if currency in row.amounts %}{{ row.amounts[currency] | money }}<span class="visually-hidden"> {{ currency }}</span>{% endif %}</span>
+{% endfor %}
+<span class="statement-amount">
+  {% for currency, number in row.amounts | dictsort if currency not in currencies %}
+  <span class="d-block">{{ number | money }} {{ currency }}</span>
+  {% endfor %}
+</span>
+{% endmacro %}
+{% macro statement_card(section) %}
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">{{ section.name }}</h2>
+  </div>
+  <div style="--statement-currencies:{{ currencies | length + 1 }}">
+    <div class="statement-row bg-surface-secondary text-secondary text-uppercase small fw-medium" aria-hidden="true">
+      <span>Account</span>
+      {% for currency in currencies %}<span class="statement-amount">{{ currency }}</span>{% endfor %}
+      <span class="statement-amount">Other</span>
+    </div>
+    {% for node in section.tree recursive %}
+    {% set weight = ' fw-semibold' if not node.row.depth else '' %}
+    {% if node.children %}
+    <details class="statement-branch" open>
+      <summary class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</summary>
+      {{ loop(node.children) }}
+    </details>
+    {% else %}
+    <div class="statement-row border-top{{ weight }}">{{ statement_cells(node.row) }}</div>
+    {% endif %}
+    {% else %}
+    <p class="p-3 text-secondary mb-0">No balances for this section.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endmacro %}
+<div class="row g-3">
+  {% for sections in columns %}
+  <div class="{% if columns | length == 1 %}col-12{% else %}col-12 col-xl-6{% endif %}">
+    <div class="d-flex flex-column gap-3">
+      {% for section in sections %}{{ statement_card(section) }}{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>

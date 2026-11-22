@@ -1,6 +1,6 @@
 [project]
 name = "beanie-ledger"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fast, read-only static reports for Beancount 3 ledgers"
 readme = "README.md"
 requires-python = ">=3.11"

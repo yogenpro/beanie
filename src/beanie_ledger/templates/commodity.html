@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "components.html" import trend_plot %}
+{% block head %}<script defer src="{{ link(browser_script) }}"></script>{% endblock %}
+{% block pretitle %}<div class="page-pretitle"><a href="{{ link('commodities/index.html') }}">Commodities</a></div>{% endblock %}
+{% block actions %}
+<label class="form-label mb-0" data-navigation hidden>Commodity pair
+  <select class="form-select form-select-sm">
+    {% for (base, unit), path, _ in pairs %}
+    {% set name = base ~ ' / ' ~ unit %}
+    <option value="{{ link(path) }}"{% if name == title %} selected{% endif %}>{{ name }}</option>
+    {% endfor %}
+  </select>
+</label>
+{% endblock %}
+{% block body %}
+<details class="card mb-3 report-charts" open>
+  <summary class="card-header report-disclosure"><h2 class="card-title">Price history</h2></summary>
+  <div class="card-body">{{ trend_plot(trend, quote, title) }}</div>
+</details>
+<section class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead><tr><th scope="col">Date</th><th scope="col" class="amount">Price ({{ quote }})</th></tr></thead>
+      <tbody>
+      {% for date, amount in prices %}<tr><td>{{ date }}</td><td class="amount">{{ amount | money }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

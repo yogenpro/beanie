@@ -6,6 +6,7 @@
   <title>{{ title }} · {{ site_title }}</title>
   <link rel="stylesheet" href="{{ stylesheet }}">
   <script src="{{ sidebar_script }}" defer></script>
+  {% block head %}{% endblock %}
 </head>
 <body>
 {% from "icons.html" import icon %}
@@ -40,7 +41,12 @@
   {{ report_link('accounts', 'Go to account', 'accounts/index.html', 'wallet') }}
   {{ report_link('holdings', 'Holdings', 'holdings/index.html', 'briefcase') }}
   {{ report_link('commodities', 'Commodities', 'commodities/index.html', 'coins') }}
+  {{ report_link('documents', 'Documents', 'documents/index.html', 'file-description') }}
+  {{ report_link('events', 'Events', 'events/index.html', 'book') }}
   {{ report_link('statistics', 'Statistics', 'statistics/index.html', 'chart-pie') }}
+  <li class="nav-section-title">Tools</li>
+  {{ report_link('options', 'Options', 'options/index.html', 'list-check') }}
+  {{ report_link('help', 'Help', 'help/index.html', 'list-search') }}
 </ul>
 {%- endmacro %}
 <a class="visually-hidden-focusable skip-link" href="#content">Skip to main content</a>

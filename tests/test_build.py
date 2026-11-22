@@ -2,13 +2,14 @@ from decimal import Decimal
 from html.parser import HTMLParser
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from types import SimpleNamespace
+import json
 import unittest
 from urllib.parse import urlsplit
 
+from beanie_ledger.analytics import StatementReports
 from beanie_ledger.model import BuildError, Ledger
 from beanie_ledger.site import build_site, slug
-from beanie_ledger.statements import ending_statements, income_statement, monthly_activity, rollup
+from beanie_ledger.statements import ending_statements, income_statement, rollup
 
 
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "main.beancount"
@@ -53,8 +54,9 @@ class BuildTests(unittest.TestCase):
                 self.assertGreater(usd.income, 0)
                 self.assertGreater(usd.expenses, 0)
 
-    def test_chart_uses_the_selected_period_and_matching_scale(self):
+    def test_chart_uses_the_selected_period(self):
         ledger = Ledger(EXAMPLE)
+        reports = StatementReports(ledger)
         for period, first, last, count in (
             ("all", "2023-01", "2025-12", 36),
             ("2023", "2023-01", "2023-12", 12),
@@ -62,30 +64,28 @@ class BuildTests(unittest.TestCase):
             ("2024-06", "2024-06", "2024-06", 1),
         ):
             with self.subTest(period=period):
-                chart = monthly_activity(ledger, period)
-                self.assertEqual(len(chart.bars), count)
-                self.assertEqual((chart.bars[0].month, chart.bars[-1].month), (first, last))
-                self.assertEqual(chart.ticks[2], 0)
-                self.assertEqual(chart.ticks[0], -chart.ticks[-1])
-                for bar in chart.bars:
-                    self.assertEqual(bar.income_height, round(100 * abs(bar.income) / chart.ticks[0], 2))
+                _, amounts, timeline = reports.income(period, "cost")
+                self.assertEqual(len(timeline), count)
+                self.assertEqual((timeline[0][0], timeline[-1][0]), (first, last))
+                for key, amount in amounts.items():
+                    self.assertEqual(amount, sum(month.get(key, 0) for _, month in timeline))
 
-    def test_chart_leaves_gaps_blank_and_fits_stacked_refunds(self):
-        ledger = SimpleNamespace(
-            periods=("2025-03", "2025-01"), currencies=("USD",), income="Income",
-            cost_flows={
-                "2025-01": {("Income:Salary", "USD"): Decimal(-500),
-                            ("Expenses:Groceries", "USD"): Decimal(-150)},
-                "2025-03": {("Income:Salary", "USD"): Decimal(-400)},
-            },
-        )
-        chart = monthly_activity(ledger)
-        first, gap, last = chart.bars
-        self.assertEqual([bar.month for bar in (first, gap, last)], ["2025-01", "2025-02", "2025-03"])
-        self.assertFalse(gap.has_report)
-        self.assertEqual((gap.income_height, gap.expense_height), (0, 0))
-        self.assertGreaterEqual(chart.ticks[0], Decimal(650))
-        self.assertLessEqual(first.income_height + first.expense_height, 100)
+    def test_market_units_and_conversion_use_dated_quotes(self):
+        reports = StatementReports(Ledger(EXAMPLE))
+        account = "Assets:Investments"
+        for mode, currency, amount in (
+            ("cost", "USD", "210.00"),
+            ("market", "USD", "228.3750"),
+            ("units", "INDEX", "5.25"),
+            ("to-USD", "USD", "228.3750"),
+        ):
+            with self.subTest(mode=mode):
+                _, values, _ = reports.ending("2025-11", mode, "trial")
+                self.assertEqual(values[account, currency], Decimal(amount))
+        _, older, _ = reports.ending("2025-10", "market", "trial")
+        self.assertNotIn((account, "USD"), older)
+        _, converted, _ = reports.ending("all", "to-USD", "trial")
+        self.assertIn(("Assets:Travel-Cash", "EUR"), converted)
 
     def test_render_all_pages_and_references(self):
         settings = self.root / "site.toml"
@@ -93,15 +93,26 @@ class BuildTests(unittest.TestCase):
         build_site(EXAMPLE, self.site, settings)
         landing = (self.site / "index.html").read_text()
         self.assertIn("Income Statement", landing)
-        self.assertIn("Monthly income and expenses", landing)
-        self.assertIn('class="chart-axis ', landing)
-        for report in ("balance-sheet", "trial-balance", "journal", "commodities", "statistics"):
+        self.assertIn("Stacked bars", landing)
+        self.assertIn("At market value", landing)
+        self.assertIn("Converted to USD", landing)
+        self.assertIn("Treemap", landing)
+        for report in ("balance-sheet", "balance-sheet/2025", "trial-balance", "journal", "commodities",
+                       "statistics", "holdings/by-account", "holdings/by-currency", "documents", "events",
+                       "options"):
             self.assertTrue((self.site / report / "index.html").is_file())
         account = self.site / "accounts" / slug("Assets:Checking")
-        self.assertIn("Register", (account / "index.html").read_text())
+        self.assertIn("Account Journal", (account / "index.html").read_text())
+        self.assertTrue((account / "balances/index.html").is_file())
+        self.assertTrue((account / "changes/index.html").is_file())
         empty_account = self.site / "accounts" / slug("Assets:Reserves") / "index.html"
         self.assertIn("No transactions on this account.", empty_account.read_text())
         self.assertEqual(len(list(self.site.glob("reports/*/results.csv"))), 2)
+        for payload_path in (self.site / "assets").glob("statement-*.json"):
+            payload = json.loads(payload_path.read_text())
+            self.assertIn("accounts", payload)
+            if payload["report"] == "income":
+                self.assertTrue(all(month[:4].isdigit() for month, _, _ in payload["timeline"]))
         for html in self.site.rglob("*.html"):
             parser = References()
             parser.feed(html.read_text())
@@ -119,7 +130,7 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(str(expenses.rows[0].amounts["EUR"]), "3.75")
         utilities = next(row for row in expenses.rows if row.label == "Utilities")
         self.assertEqual(str(utilities.amounts["USD"]), "134.45")
-        self.assertEqual(str(net.rows[0].amounts["USD"]), "-1720.34")
+        self.assertEqual(str(net.rows[0].amounts["USD"]), "1720.34")
 
         before = tuple(ledger.entries)
         sheet, trial = ending_statements(ledger)
